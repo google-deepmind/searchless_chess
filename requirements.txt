@@ -1,0 +1,15 @@
+absl-py
+apache-beam
+chess
+chex
+dm-haiku
+grain-nightly
+jax
+jaxtyping
+jupyter
+numpy
+optax
+orbax-checkpoint
+pandas
+scipy
+typing-extensions
