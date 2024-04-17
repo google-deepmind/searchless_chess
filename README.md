@@ -156,11 +156,13 @@ cd data
 cd ..
 ```
 
-We also provide the individual dataset download links in the following table:
+We also provide the individual dataset download links in the following table
+(the action-value dataset is sharded into 2148 files due to its size and only
+the link to the first shard is listed below):
 
 | Split | Action-Value | Behavioral Cloning | State-Value | Puzzles |
 |------ | ------------ | ------------------ | ----------- | ------- |
-| Train | [1.1 TB](https://storage.googleapis.com/searchless_chess/data/train/action_value_data.bag) | [34 GB](https://storage.googleapis.com/searchless_chess/data/train/behavioral_cloning_data.bag) | [36 GB](https://storage.googleapis.com/searchless_chess/data/train/state_value_data.bag) | - |
+| Train | [1.2 GB](https://storage.googleapis.com/searchless_chess/data/train/action_value-00000-of-02148_data.bag) (of 1.1 TB) | [34 GB](https://storage.googleapis.com/searchless_chess/data/train/behavioral_cloning_data.bag) | [36 GB](https://storage.googleapis.com/searchless_chess/data/train/state_value_data.bag) | - |
 | Test  | [141 MB](https://storage.googleapis.com/searchless_chess/data/test/action_value_data.bag) | [4.1 MB](https://storage.googleapis.com/searchless_chess/data/test/behavioral_cloning_data.bag) | [4.4 MB](https://storage.googleapis.com/searchless_chess/data/test/state_value_data.bag) | [4.5 MB](https://storage.googleapis.com/searchless_chess/data/puzzles.csv) |
 
 

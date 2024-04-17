@@ -29,7 +29,10 @@ cd ..
 
 mkdir train
 cd train
-wget https://storage.googleapis.com/searchless_chess/data/train/action_value_data.bag
+for idx in $(seq -f "%05g" 0 2147)
+do
+  wget https://storage.googleapis.com/searchless_chess/data/train/action_value-$idx-of-02148_data.bag
+done
 wget https://storage.googleapis.com/searchless_chess/data/train/behavioral_cloning_data.bag
 wget https://storage.googleapis.com/searchless_chess/data/train/state_value_data.bag
 cd ..
