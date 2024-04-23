@@ -19,9 +19,12 @@ Bagz is a file format for storing a sequence of string records, typically
 serialised protocol buffers. It supports fast index based look-up.
 """
 
+import bisect
 from collections.abc import Sequence
+import itertools
 import mmap
 import os
+import re
 import shutil
 import struct
 from typing import Any, SupportsIndex
@@ -31,8 +34,8 @@ from typing_extensions import Self
 import zstandard as zstd
 
 
-class BagReader(Sequence[bytes]):
-  """Reader for Bagz files."""
+class BagFileReader(Sequence[bytes]):
+  """Reader for single Bagz files."""
 
   def __init__(
       self,
@@ -41,10 +44,10 @@ class BagReader(Sequence[bytes]):
       separate_limits: bool = False,
       decompress: bool | None = None,
   ) -> None:
-    """Creates a BagReader.
+    """Creates a BagFileReader.
 
     Args:
-      filename: The name of the Bagz file to read.
+      filename: The name of the single Bagz file to read.
       separate_limits: Whether the limits are stored in a separate file.
       decompress: Whether to decompress the records. If None, uses the file
         extension to determine whether to decompress.
@@ -104,6 +107,97 @@ class BagReader(Sequence[bytes]):
     else:
       rec_range = (0, *struct.unpack('<q', self._limits[end : end + 8]))
     return self._process(self._records[slice(*rec_range)])
+
+
+class BagShardReader(Sequence[bytes]):
+  """Reader for sharded Bagz files."""
+
+  def __init__(
+      self,
+      filename: str,
+      *,
+      separate_limits: bool = False,
+      decompress: bool | None = None,
+  ) -> None:
+    """Creates a BagShardReader.
+
+    Args:
+      filename: The name of the sharded Bagz file to read.
+      separate_limits: Whether the limits are stored in a separate file.
+      decompress: Whether to decompress the records. If None, uses the file
+        extension to determine whether to decompress.
+    """
+    matches = re.findall(r'@(\d+)', filename)
+    assert len(matches) == 1
+    num_files = int(matches[0])
+    assert num_files < 100_000
+    self._bags = tuple(
+        BagFileReader(
+            filename=re.sub(
+                r'@(\d+)', f'-{idx:05d}-of-{num_files:05d}', filename
+            ),
+            separate_limits=separate_limits,
+            decompress=decompress,
+        )
+        for idx in range(num_files)
+    )
+    self._accum = tuple(itertools.accumulate(map(len, self._bags)))
+
+  def __len__(self) -> int:
+    """Returns the number of records in the Bagz file."""
+    return self._accum[-1]
+
+  def __getitem__(self, index: int) -> bytes:
+    if index < 0:
+      index += self._accum[-1]
+    if seqn := bisect.bisect_left(self._accum, index + 1):
+      index -= self._accum[seqn - 1]
+    return self._bags[seqn][index]
+
+
+class BagReader(Sequence[bytes]):
+  """Reader for Bagz files."""
+
+  def __init__(
+      self,
+      filename: str,
+      *,
+      separate_limits: bool = False,
+      decompress: bool | None = None,
+  ) -> None:
+    """Creates a BagReader.
+
+    Args:
+      filename: The name of the Bagz file to read. Supports the @N shard syntax
+        (where @0 corresponds to the single file case). If the shard syntax does
+        not parse, then `filename` is treated as a single file.
+      separate_limits: Whether the limits are stored in a separate file.
+      decompress: Whether to decompress the records. If None, uses the file
+        extension to determine whether to decompress.
+    """
+    if matches := re.findall(r'@(\d+)', filename):
+      assert len(matches) == 1
+      if int(matches[0]) != '0':
+        reader_class = BagShardReader
+      else:
+        filename = filename.replace(matches[0], '')
+        reader_class = BagFileReader
+    else:
+      reader_class = BagFileReader
+
+    self._reader = reader_class(
+        filename=filename,
+        separate_limits=separate_limits,
+        decompress=decompress,
+    )
+
+  def __len__(self) -> int:
+    """Returns the number of records in the Bagz file."""
+    return len(self._reader)
+
+  def __getitem__(self, index: SupportsIndex) -> bytes:
+    """Returns a record from the Bagz file."""
+    return self._reader[index]
 
 
 class BagWriter:
