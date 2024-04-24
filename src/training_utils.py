@@ -24,7 +24,6 @@ from grain import python as pygrain
 import haiku as hk
 import jax
 from jax import numpy as jnp
-import numpy as np
 import optax
 import orbax.checkpoint as ocp
 
@@ -55,31 +54,6 @@ def replicate(
           array.shape, sharding.replicate(), lambda _: array
       ),
       array_tree,
-  )
-
-
-def partition(
-    array: chex.Array,
-    sharding: jax.sharding.Sharding,
-) -> chex.ArrayDevice:
-  """Partitions the `array` across all devices specified by `sharding`.
-
-  In a multi-controller setting, we cannot simply use `jax.device_put` to shard
-  the `array` since not all devices are addressable from every process.
-
-  Args:
-    array: The array to be sharded across devices.
-    sharding: Describes how the array should be laid out across devices.
-
-  Returns:
-    The distributed `array`, sharded across all the devices.
-  """
-  arrays = jax.device_put(
-      np.split(array, jax.local_device_count(), axis=0), jax.local_devices()
-  )
-  global_shape = (jax.process_count() * array.shape[0], *array.shape[1:])
-  return jax.make_array_from_single_device_arrays(
-      global_shape, sharding, arrays
   )
 
 

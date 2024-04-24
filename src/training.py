@@ -135,8 +135,8 @@ def train(
         )
 
     sequences, loss_mask = next(data_iter)
-    sequences = training_utils.partition(array=sequences, sharding=sharding)
-    loss_mask = training_utils.partition(array=loss_mask, sharding=sharding)
+    sequences = jax.lax.with_sharding_constraint(sequences, sharding)
+    loss_mask = jax.lax.with_sharding_constraint(loss_mask, sharding)
 
     params, params_ema, opt_state, loss, grad_norm_unclipped = update_fn(
         params=params,
