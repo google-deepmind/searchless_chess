@@ -147,8 +147,7 @@ def train(
     )
 
     if train_config.log_frequency is not None:
-      # We also log the first gradient step as a check.
-      if (step == 0) or (step % train_config.log_frequency == 0):
+      if step % train_config.log_frequency == 0:
         logging.info(
             'step: %d | loss: %f | grad_norm_unclipped: %f',
             step,
