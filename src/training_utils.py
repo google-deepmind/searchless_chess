@@ -49,7 +49,7 @@ def replicate(
   Returns:
     The distributed `array_tree`, replicated across all the devices.
   """
-  return jax.tree_map(
+  return jax.tree.map(
       lambda array: jax.make_array_from_callback(
           array.shape, sharding.replicate(), lambda _: array
       ),
@@ -135,7 +135,7 @@ def update_parameters(
   new_params = optax.apply_updates(params, updates)
   grad_norm_unclipped = optax.global_norm(grad)
 
-  new_params_ema = jax.tree_map(_update_ema, params_ema, new_params)
+  new_params_ema = jax.tree.map(_update_ema, params_ema, new_params)
   return new_params, new_params_ema, new_opt_state, loss, grad_norm_unclipped
 
 
