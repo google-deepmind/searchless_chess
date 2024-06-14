@@ -102,7 +102,7 @@ def main(argv: Sequence[str]) -> None:
       os.getcwd(),
       '../data/puzzles.csv',
   )
-  puzzles = pd.read_csv(puzzles_path, nrows=_NUM_PUZZLES.value + 1)
+  puzzles = pd.read_csv(puzzles_path, nrows=_NUM_PUZZLES.value)
   engine = constants.ENGINE_BUILDERS[_AGENT.value]()
 
   for puzzle_id, puzzle in puzzles.iterrows():
