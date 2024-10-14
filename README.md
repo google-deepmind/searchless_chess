@@ -1,20 +1,19 @@
-# Grandmaster-Level Chess Without Search
+# Amortized Planning with Large-Scale Transformers: A Case Study on Chess
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/google-deepmind/searchless_chess/master/overview.svg" alt="Overview figure"/>
 </p>
 
 
-This repository provides an implementation of our paper [Grandmaster-Level Chess Without Search](https://arxiv.org/abs/2402.04494).
+This repository provides an implementation of our NeurIPS 2024 paper [Amortized Planning with Large-Scale Transformers: A Case Study on Chess](https://arxiv.org/abs/2402.04494).
 
-> The recent breakthrough successes in machine learning are mainly attributed to scale: namely large-scale attention-based architectures and datasets of unprecedented scale.
-This paper investigates the impact of training at scale for chess.
-Unlike traditional chess engines that rely on complex heuristics, explicit search, or a combination of both, we train a 270M parameter transformer model with supervised learning on a dataset of 10 million chess games.
-We annotate each board in the dataset with action-values provided by the powerful Stockfish 16 engine, leading to roughly 15 billion data points.
-Our largest model reaches a Lichess blitz Elo of 2895 against humans, and successfully solves a series of challenging chess puzzles, without any domain-specific tweaks or explicit search algorithms.
-We also show that our model outperforms AlphaZero's policy and value networks (without MCTS) and GPT-3.5-turbo-instruct.
-A systematic investigation of model and dataset size shows that strong chess performance only arises at sufficient scale.
-To validate our results, we perform an extensive series of ablations of design choices and hyperparameters.
+> This paper uses chess, a landmark planning problem in AI, to assess transformers’ performance on a planning task where memorization is futile – even at a large scale.
+To this end, we release ChessBench, a large-scale benchmark dataset of 10 million chess games with legal move and value annotations (15 billion data points) provided by Stockfish 16, the state-of-the-art chess engine.
+We train transformers with up to 270 million parameters on ChessBench via supervised learning and perform extensive ablations to assess the impact of dataset size, model size, architecture type, and different prediction targets (state-values, action-values, and behavioral cloning).
+Our largest models learn to predict action-values for novel boards quite accurately, implying highly non-trivial generalization.
+Despite performing no explicit search, our resulting chess policy solves challenging chess puzzles and achieves a surprisingly strong Lichess blitz Elo of 2895 against humans (Grandmaster level).
+We also compare to Leela Chess Zero and AlphaZero (trained without supervision via self-play) with and without search.
+We show that, although a remarkably good approximation of Stockfish’s search-based algorithm can be distilled into large-scale transformers via supervised learning, perfect distillation is still beyond reach, thus making ChessBench well-suited for future research.
 
 
 ## Contents
@@ -39,6 +38,7 @@ To validate our results, we perform an extensive series of ablations of design c
 |
 ├── src
 |   ├── engines
+|   |   ├── constants.py            - Engine constants
 |   |   ├── engine.py               - Engine interface
 |   |   ├── lc0_engine.py           - Leela Chess Zero engine
 |   |   ├── neural_engines.py       - Neural engines
@@ -252,7 +252,7 @@ jupyter notebook
 ## Citing this work
 
 ```latex
-@article{ruoss2024grandmaster,
+@inproceedings{ruoss2024amortized,
   author       = {Anian Ruoss and
                   Gr{\'{e}}goire Del{\'{e}}tang and
                   Sourabh Medapati and
@@ -260,9 +260,12 @@ jupyter notebook
                   Li Kevin Wenliang and
                   Elliot Catt and
                   John Reid and
+                  Cannada A. Lewis and
+                  Joel Veness and
                   Tim Genewein},
-  title        = {Grandmaster-Level Chess Without Search},
-  journal      = {arXiv:2402.04494},
+  title        = {Amortized Planning with Large-Scale Transformers: A Case Study
+                  on Chess},
+  booktitle    = {NeurIPS},
   year         = {2024}
 }
 ```
