@@ -1,4 +1,5 @@
 #!/bin/bash
+#!/bin/bash
 # Copyright 2024 DeepMind Technologies Limited
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,24 +16,38 @@
 # ==============================================================================
 
 
+
 set -ex
 
-wget https://storage.googleapis.com/searchless_chess/data/eco_openings.pgn
-wget https://storage.googleapis.com/searchless_chess/data/puzzles.csv
+download_if_not_exist() {
+	url=$1
+	file=$(basename "$url")
 
-mkdir test
+	if [ ! -f "$file" ]; then
+		wget "$url"
+	else
+		echo "$file already exists, skipping download."
+	fi
+}
+
+download_if_not_exist https://storage.googleapis.com/searchless_chess/data/eco_openings.pgn
+download_if_not_exist https://storage.googleapis.com/searchless_chess/data/puzzles.csv
+
+mkdir -p test
 cd test
-wget https://storage.googleapis.com/searchless_chess/data/test/action_value_data.bag
-wget https://storage.googleapis.com/searchless_chess/data/test/behavioral_cloning_data.bag
-wget https://storage.googleapis.com/searchless_chess/data/test/state_value_data.bag
+download_if_not_exist https://storage.googleapis.com/searchless_chess/data/test/action_value_data.bag
+download_if_not_exist https://storage.googleapis.com/searchless_chess/data/test/behavioral_cloning_data.bag
+download_if_not_exist https://storage.googleapis.com/searchless_chess/data/test/state_value_data.bag
 cd ..
 
-mkdir train
+mkdir -p train
 cd train
 for idx in $(seq -f "%05g" 0 2147)
 do
-  wget https://storage.googleapis.com/searchless_chess/data/train/action_value-$idx-of-02148_data.bag
+	download_if_not_exist https://storage.googleapis.com/searchless_chess/data/train/action_value-$idx-of-02148_data.bag
 done
-wget https://storage.googleapis.com/searchless_chess/data/train/behavioral_cloning_data.bag
-wget https://storage.googleapis.com/searchless_chess/data/train/state_value_data.bag
+download_if_not_exist https://storage.googleapis.com/searchless_chess/data/train/behavioral_cloning_data.bag
+download_if_not_exist https://storage.googleapis.com/searchless_chess/data/train/state_value_data.bag
 cd ..
+
+
