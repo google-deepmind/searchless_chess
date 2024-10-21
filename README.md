@@ -7,11 +7,11 @@
 
 This repository provides an implementation of our NeurIPS 2024 paper [Amortized Planning with Large-Scale Transformers: A Case Study on Chess](https://arxiv.org/abs/2402.04494).
 
-> This paper uses chess, a landmark planning problem in AI, to assess transformers’ performance on a planning task where memorization is futile – even at a large scale.
+> This paper uses chess, a landmark planning problem in AI, to assess transformers’ performance on a planning task where memorization is futile — even at a large scale.
 To this end, we release ChessBench, a large-scale benchmark dataset of 10 million chess games with legal move and value annotations (15 billion data points) provided by Stockfish 16, the state-of-the-art chess engine.
 We train transformers with up to 270 million parameters on ChessBench via supervised learning and perform extensive ablations to assess the impact of dataset size, model size, architecture type, and different prediction targets (state-values, action-values, and behavioral cloning).
 Our largest models learn to predict action-values for novel boards quite accurately, implying highly non-trivial generalization.
-Despite performing no explicit search, our resulting chess policy solves challenging chess puzzles and achieves a surprisingly strong Lichess blitz Elo of 2895 against humans (Grandmaster level).
+Despite performing no explicit search, our resulting chess policy solves challenging chess puzzles and achieves a surprisingly strong Lichess blitz Elo of 2895 against humans (grandmaster level).
 We also compare to Leela Chess Zero and AlphaZero (trained without supervision via self-play) with and without search.
 We show that, although a remarkably good approximation of Stockfish’s search-based algorithm can be distilled into large-scale transformers via supervised learning, perfect distillation is still beyond reach, thus making ChessBench well-suited for future research.
 
