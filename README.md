@@ -99,7 +99,7 @@ If you have a GPU available (highly recommended for fast training), then you can
 pip install --upgrade "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 ```
 Note that the jax version must correspond to the existing CUDA installation you wish to use (CUDA 12 in the example above).
-Please see the [JAX documentation](https://github.com/google/jax#installation) for more details.
+Please see the [JAX documentation](https://github.com/jax-ml/jax#installation) for more details.
 
 ### Installing Stockfish
 
